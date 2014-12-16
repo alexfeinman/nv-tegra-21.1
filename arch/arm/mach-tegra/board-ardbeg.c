@@ -32,7 +32,9 @@
 #include <linux/gpio.h>
 #include <linux/input.h>
 #include <linux/platform_data/tegra_usb.h>
+#include <linux/mtd/partitions.h>
 #include <linux/spi/spi.h>
+#include <linux/spi/flash.h>
 #include <linux/spi/rm31080a_ts.h>
 #include <linux/maxim_sti.h>
 #include <linux/memblock.h>
@@ -1066,6 +1068,33 @@ static struct tegra_spi_device_controller_data dev_cdata = {
 	.tx_clk_tap_delay = 16,
 };
 
+static struct mtd_partition ardbeg_spi_flash_partitions[] = {
+    {
+        .name = "eeprom data",
+        .size = MTDPART_SIZ_FULL,
+        .offset = 0,
+    }
+};
+
+static struct flash_platform_data m25_ardbeg_data = {
+    .name = "m25p80",
+    .parts = ardbeg_spi_flash_partitions,
+    .nr_parts = ARRAY_SIZE(ardbeg_spi_flash_partitions),
+    .type = "m25p32",
+};
+
+static struct spi_board_info m25_ardbeg_spi_board[1] = {
+    {
+        .modalias = "m25p80",
+        .bus_num = 3,
+        .chip_select = 0,
+        .max_speed_hz = 12 * 1000 * 1000,
+        .mode = SPI_MODE_0,
+//        .controller_data = &dev_cdata,
+        .platform_data = &m25_ardbeg_data,
+    },
+};
+
 static struct spi_board_info rm31080a_ardbeg_spi_board[1] = {
 	{
 		.modalias = "rm_ts_spidev",
@@ -1375,6 +1404,7 @@ static void __init tegra_ardbeg_late_init(void)
 	ardbeg_xusb_init();
 #endif
 	ardbeg_i2c_init();
+	spi_register_board_info(m25_ardbeg_spi_board, 1);
 	ardbeg_audio_init();
 	platform_add_devices(ardbeg_devices, ARRAY_SIZE(ardbeg_devices));
 	if (board_info.board_id == BOARD_PM374)	/* Norrin ERS */

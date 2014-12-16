@@ -1188,7 +1188,8 @@ void tegra_dc_sor_enable_lvds(struct tegra_dc_sor_data *sor,
 	bool balanced, bool conforming)
 {
 	u32 reg_val;
-
+pr_err("%s\n", __func__);
+	tegra_sor_clk_enable(sor);
 	tegra_dc_sor_enable_dc(sor);
 	tegra_dc_sor_config_panel(sor, true);
 	tegra_dc_writel(sor->dc, 0x9f00, DC_CMD_STATE_CONTROL);
@@ -1405,6 +1406,7 @@ void tegra_sor_setup_clk(struct tegra_dc_sor_data *sor, struct clk *clk,
 		if (dc->mode.pclk != clk_get_rate(dc_parent_clk))
 			clk_set_rate(dc_parent_clk, dc->mode.pclk);
 	}
+	clk_enable(clk);
 }
 
 void tegra_sor_precharge_lanes(struct tegra_dc_sor_data *sor)

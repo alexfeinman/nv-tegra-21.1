@@ -32,6 +32,7 @@
 #include <linux/dma-contiguous.h>
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
+#include <linux/i2c/ds90uh925q_ser.h>
 
 #include <mach/irqs.h>
 #include <mach/dc.h>
@@ -206,8 +207,10 @@ static struct resource ardbeg_disp2_resources[] = {
 static struct tegra_dc_sd_settings sd_settings;
 
 static struct tegra_dc_out ardbeg_disp1_out = {
-	.type		= TEGRA_DC_OUT_DSI,
+//	.type		= TEGRA_DC_OUT_DSI,
+	.type		= TEGRA_DC_OUT_LVDS,
 	.sd_settings	= &sd_settings,
+    .parent_clk = "pll_d",
 };
 #endif
 
@@ -700,6 +703,7 @@ static struct tegra_panel *ardbeg_panel_configure(struct board_info *board_out,
 	if (!board_out)
 		board_out = &boardtmp;
 	tegra_get_display_board_info(board_out);
+	board_out->board_id = BOARD_PM366;
 
 	switch (board_out->board_id) {
 	case BOARD_E1639:
@@ -831,6 +835,26 @@ static void ardbeg_panel_select(void)
 }
 #endif
 
+struct ds90uh925q_platform_data lvds_ser_platform_data = {
+    .has_lvds_en_gpio = 1,  /* has GPIO to enable */
+    .lvds_en_gpio = TEGRA_GPIO_PU3, /* GPIO */
+
+    .is_fpdlinkII = false,
+    .support_hdcp = false,
+    .clk_rise_edge = false,
+};
+
+static struct i2c_board_info __initdata i2c_lvds_serializers[] ={
+	{
+    	I2C_BOARD_INFO("ds90uh925q", 0x14),
+    	.platform_data  = &lvds_ser_platform_data,
+	},
+	{
+    	I2C_BOARD_INFO("ds90uh925q", 0x18),
+    	.platform_data  = &lvds_ser_platform_data,
+	},
+};
+
 int __init ardbeg_panel_init(void)
 {
 	int err = 0;
@@ -953,6 +977,8 @@ int __init ardbeg_panel_init(void)
 		}
 	}
 #endif
+	i2c_register_board_info(1, i2c_lvds_serializers, 2);
+
 	tegra_get_board_info(&board_info);
 	switch (board_info.board_id) {
 	case BOARD_E1991:
@@ -1030,15 +1056,27 @@ int __init ardbeg_display_init(void)
 
 	if (panel && panel->init_dc_out) {
 		panel->init_dc_out(&ardbeg_disp1_out);
-		if (ardbeg_disp1_out.n_modes && ardbeg_disp1_out.modes)
+		if (ardbeg_disp1_out.n_modes && ardbeg_disp1_out.modes) {
+
+			int err;
+			struct clk* parent = clk_get_sys(NULL, ardbeg_disp1_out.parent_clk);
 			disp1_rate = ardbeg_disp1_out.modes[0].pclk;
+			if ( !IS_ERR(parent) ) {
+				if ( (err = clk_set_parent(disp1_clk, parent)) ) {
+					pr_err("Failed to set clock parent to %s: %d\n", ardbeg_disp1_out.parent_clk, err);
+				}
+			}
+			else
+				clk_put(parent);
+
+		}
 	} else {
 		disp1_rate = 0;
 		if (!panel || !panel->init_dc_out)
 			printk(KERN_ERR "disp1 panel output not specified!\n");
 	}
 
-	printk(KERN_DEBUG "disp1 pclk=%ld\n", disp1_rate);
+	printk(KERN_ERR "disp1 pclk=%ld\n", disp1_rate);
 	if (disp1_rate)
 		tegra_dvfs_resolve_override(disp1_clk, disp1_rate);
 #endif

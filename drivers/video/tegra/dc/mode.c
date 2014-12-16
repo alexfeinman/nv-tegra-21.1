@@ -346,15 +346,15 @@ int tegra_dc_program_mode(struct tegra_dc *dc, struct tegra_dc_mode *mode)
 			val |= DISP_DATA_ORDER_BLUE_RED;
 	}
 	tegra_dc_writel(dc, val, DC_DISP_DISP_INTERFACE_CONTROL);
-
 	rate = tegra_dc_clk_get_rate(dc);
 	pclk = tegra_dc_pclk_round_rate(dc, mode->pclk);
+pr_err("rate: %lu, pclk: %lu, mode->pclk=%d\n", rate, pclk, mode->pclk);
 	div = (rate * 2 / pclk) - 2;
 	dev_info(&dc->ndev->dev,
 		"nominal-pclk:%d parent:%lu div:%lu.%lu pclk:%lu %d~%d\n",
 		mode->pclk, rate, (div + 2) / 2, ((div + 2) % 2) * 5, pclk,
-		mode->pclk / 100 * 99, mode->pclk / 100 * 109);
-	if (!pclk || pclk < (mode->pclk / 100 * 99) ||
+		mode->pclk / 100 * 91, mode->pclk / 100 * 109);
+	if (!pclk || pclk < (mode->pclk / 100 * 91) ||
 	    pclk > (mode->pclk / 100 * 109)) {
 		dev_err(&dc->ndev->dev, "pclk out of range!\n");
 		return -EINVAL;

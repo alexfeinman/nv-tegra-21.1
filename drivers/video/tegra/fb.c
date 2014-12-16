@@ -309,7 +309,7 @@ static int tegra_fb_blank(int blank, struct fb_info *info)
 
 		dc->blanked = false;
 		return 0;
-
+#if 0
 	case FB_BLANK_NORMAL:
 		dev_dbg(&tegra_fb->ndev->dev, "blank - normal\n");
 		/* To pan fb at the unblank */
@@ -328,7 +328,7 @@ static int tegra_fb_blank(int blank, struct fb_info *info)
 			tegra_fb->curr_xoffset = -1;
 		tegra_dc_disable(dc);
 		return 0;
-
+#endif
 	default:
 		return -ENOTTY;
 	}

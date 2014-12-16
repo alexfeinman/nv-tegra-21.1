@@ -110,7 +110,7 @@ GPIO, also the GPIO is same for T114 interposer and T124*/
 #define TEGRA_GPIO_LDO_EN	TEGRA_GPIO_PR2
 
 /*GPIOs used by board panel file */
-#define DSI_PANEL_RST_GPIO      TEGRA_GPIO_PH3
+#define DSI_PANEL_RST_GPIO      TEGRA_GPIO_PU3
 #define DSI_PANEL_BL_PWM_GPIO   TEGRA_GPIO_PH1
 
 /* HDMI Hotplug detection pin */
@@ -155,7 +155,7 @@ int loki_fan_init(void);
 int loki_rail_alignment_init(void);
 
 /* AUO Display related GPIO */
-#define DSI_PANEL_RST_GPIO      TEGRA_GPIO_PH3 /* GMI_AD11 */
+#define AUO_PANEL_RST_GPIO      TEGRA_GPIO_PH3 /* GMI_AD11 */
 #define LCD_RST_L               TEGRA_GPIO_PH5 /* GMI_AD13 */
 #define LCD_LR                  TEGRA_GPIO_PH6 /* GMI_AD14 */
 #define LCD_TE                  TEGRA_GPIO_PI4 /* GMI_RST_N */

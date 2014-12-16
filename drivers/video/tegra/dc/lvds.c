@@ -19,6 +19,13 @@
 
 #include <mach/dc.h>
 
+#include <linux/clk.h>
+#include <linux/clk-provider.h>
+#include <linux/of.h>
+#include <linux/clk/tegra.h>
+
+#include "mach/../../clock.h"
+
 #include "lvds.h"
 #include "dc_priv.h"
 
