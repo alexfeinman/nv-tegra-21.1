@@ -704,6 +704,7 @@ static struct tegra_panel *ardbeg_panel_configure(struct board_info *board_out,
 		board_out = &boardtmp;
 	tegra_get_display_board_info(board_out);
 	board_out->board_id = BOARD_PM366;
+	board_out->board_id = 42;
 
 	switch (board_out->board_id) {
 	case BOARD_E1639:
@@ -727,6 +728,14 @@ static struct tegra_panel *ardbeg_panel_configure(struct board_info *board_out,
 			dsi_instance = DSI_INSTANCE_0;
 			break;
 		}
+		break;
+	case 42:
+		panel = &dsi_lvds_1366_5;
+		//panel = &dsi_a_1200_800_8_0;
+		dsi_instance = DSI_INSTANCE_1;
+		ardbeg_disp1_out.type = TEGRA_DC_OUT_DSI;
+		tegra_io_dpd_disable(&dsic_io);
+		tegra_io_dpd_disable(&dsid_io);
 		break;
 	case BOARD_PM363:
 	case BOARD_E1824:
@@ -1033,6 +1042,9 @@ int __init ardbeg_display_init(void)
 	struct board_info board;
 	long disp1_rate = 0;
 	long disp2_rate = 0;
+
+	gpio_export(TEGRA_GPIO_PU3, 0);
+	gpio_direction_output(TEGRA_GPIO_PU3, 1);
 
 	/*
 	 * TODO

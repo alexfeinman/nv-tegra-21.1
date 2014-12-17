@@ -143,6 +143,7 @@ static int tegra_dsi2lvds_init(struct tegra_dc_dsi_data *dsi)
 	int err = 0;
 
 	if (dsi2lvds) {
+		dev_err(&dsi->dc->ndev->dev, "Already allocated\n");
 		tegra_dsi_set_outdata(dsi, dsi2lvds);
 		return err;
 	}

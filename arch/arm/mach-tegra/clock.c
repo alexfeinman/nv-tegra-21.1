@@ -50,7 +50,7 @@
 /* Global data of Tegra CPU CAR ops */
 struct tegra_cpu_car_ops *tegra_cpu_car_ops;
 
-#define DISABLE_BOOT_CLOCKS 1
+#define DISABLE_BOOT_CLOCKS 0
 
 /*
  * Locking:
@@ -444,8 +444,8 @@ int clk_set_parent_locked(struct clk *c, struct clk *parent)
 	if ((new_rate > clk_get_max_rate(c)) &&
 		(!parent->ops || !parent->ops->shared_bus_update)) {
 
-		pr_err("Failed to set parent %s for %s (violates clock limit"
-		       " %lu)\n", parent->name, c->name, clk_get_max_rate(c));
+		pr_err("Failed to set parent %s for %s to %lu (violates clock limit"
+		       " %lu)\n", parent->name, c->name, new_rate, clk_get_max_rate(c));
 #if !IGNORE_PARENT_OVERCLOCK
 		ret = -EINVAL;
 		goto out;
