@@ -4916,17 +4916,26 @@ static long tegra_dc_dsi_setup_clk(struct tegra_dc *dc, struct clk *clk)
 		goto skip_setup;
 
 	if (clk == dc->clk) {
+pr_err("trying to get clock %s\n", dc->out->parent_clk ? : "pll_d2_out0");
 		parent_clk = clk_get_sys(NULL,
-				dc->out->parent_clk ? : "pll_d_out0");
+				dc->out->parent_clk ? : "pll_d2_out0");
+		if ( IS_ERR(parent_clk))
+			return PTR_ERR(parent_clk);
 		base_clk = clk_get_parent(parent_clk);
 	} else {
 		if (dc->pdata->default_out->dsi->dsi_instance) {
+pr_err("trying to get clock %s\n", dc->out->parent_clk ? : "pll_d2_out0");
 			parent_clk = clk_get_sys(NULL,
 				dc->out->parent_clk ? : "pll_d2_out0");
+		if ( IS_ERR(parent_clk))
+			return PTR_ERR(parent_clk);
 			base_clk = clk_get_parent(parent_clk);
 		} else {
+pr_err("trying to get clock %s\n", dc->out->parent_clk ? : "pll_d_out0");
 			parent_clk = clk_get_sys(NULL,
 				dc->out->parent_clk ? : "pll_d_out0");
+		if ( IS_ERR(parent_clk))
+			return PTR_ERR(parent_clk);
 			base_clk = clk_get_parent(parent_clk);
 		}
 	}

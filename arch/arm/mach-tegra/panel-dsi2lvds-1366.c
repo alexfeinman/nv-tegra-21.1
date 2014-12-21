@@ -49,7 +49,7 @@ static struct regulator *vdd_lcd_bl_en;
 static struct regulator *avdd_lcd_3v0_2v8;
 
 static struct tegra_dc_sd_settings dsi_lvds_1366_5_sd_settings = {
-	.enable = 0, /* disabled by default. */
+	.enable = 1, /* disabled by default. */
 	.use_auto_pwm = false,
 	.hw_update_delay = 0,
 	.bin_width = -1,
@@ -527,7 +527,7 @@ static int dsi_lvds_1366_5_postsuspend(void)
 	return 0;
 }
 
-static int dsi_lvds_1366_5_register_bl_dev(void)
+static int __maybe_unused dsi_lvds_1366_5_register_bl_dev(void)
 {
 	int err = 0;
 
@@ -564,10 +564,11 @@ static void dsi_lvds_1366_5_dc_out_init(struct tegra_dc_out *dc)
 	dc->disable = dsi_lvds_1366_5_disable;
 	dc->postsuspend = dsi_lvds_1366_5_postsuspend;
 	dc->postpoweron = dsi_lvds_1366_5_postpoweron;
-	dc->width = 130;
-	dc->height = 74;
+	dc->depth = 24,
+	dc->width = 309;
+	dc->height = 174;
 	dc->flags = DC_CTRL_MODE;
-	dc->rotation = 0;
+	dc->rotation = 180;
 }
 
 static void dsi_lvds_1366_5_fb_data_init(struct tegra_fb_data *fb)
@@ -580,7 +581,7 @@ static void dsi_lvds_1366_5_sd_settings_init
 	(struct tegra_dc_sd_settings *settings)
 {
 	*settings = dsi_lvds_1366_5_sd_settings;
-	settings->bl_device_name = "pwm-backlight";
+//	settings->bl_device_name = "pwm-backlight";
 }
 
 #ifdef CONFIG_TEGRA_DC_CMU
@@ -595,7 +596,7 @@ struct tegra_panel __initdata dsi_lvds_1366_5 = {
 	.init_dc_out = dsi_lvds_1366_5_dc_out_init,
 	.init_fb_data = dsi_lvds_1366_5_fb_data_init,
 	.set_disp_device = dsi_lvds_1366_5_set_disp_device,
-	.register_bl_dev = dsi_lvds_1366_5_register_bl_dev,
+//	.register_bl_dev = dsi_lvds_1366_5_register_bl_dev,
 #ifdef CONFIG_TEGRA_DC_CMU
 	.init_cmu_data = dsi_lvds_1366_5_cmu_init,
 #endif
