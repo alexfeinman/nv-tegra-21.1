@@ -1080,7 +1080,7 @@ static struct flash_platform_data m25_ardbeg_data = {
     .name = "m25p80",
     .parts = ardbeg_spi_flash_partitions,
     .nr_parts = ARRAY_SIZE(ardbeg_spi_flash_partitions),
-    .type = "m25p32",
+    .type = "w25q32dw",
 };
 
 static struct spi_board_info m25_ardbeg_spi_board[1] = {
